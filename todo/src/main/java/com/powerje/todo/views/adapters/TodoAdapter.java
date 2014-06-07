@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.powerje.todo.R;
 import com.powerje.todo.models.Todo;
+import com.powerje.todo.reminders.TodoNotificationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +21,14 @@ import butterknife.InjectView;
  */
 public class TodoAdapter extends BaseAdapter {
 
-    private List<Todo> todos = new ArrayList<>();
+    private List<TodoNotificationUtils.TodoNotification> todos = new ArrayList<>();
 
     public void addTodo(Todo todo) {
         todos.add(todo);
         this.notifyDataSetChanged();
     }
 
-    public List<Todo> getTodos() {
+    public List<TodoNotificationUtils.TodoNotification> getTodos() {
         // TODO: defensively copy this so as not to be a caveman
         return todos;
     }
@@ -36,7 +37,7 @@ public class TodoAdapter extends BaseAdapter {
     public int getCount() { return todos.size(); }
 
     @Override
-    public Todo getItem(int position) { return todos.get(position); }
+    public TodoNotificationUtils.TodoNotification getItem(int position) { return todos.get(position); }
 
     @Override
     public long getItemId(int position) { return position; }
@@ -53,7 +54,7 @@ public class TodoAdapter extends BaseAdapter {
             view.setTag(holder);
         }
 
-        Todo todo = getItem(position);
+        TodoNotificationUtils.TodoNotification todo = getItem(position);
         holder.name.setText(todo.getText());
 
         return view;
