@@ -1,6 +1,7 @@
 package com.powerje.todo.views;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,6 +10,7 @@ import android.widget.ListView;
 
 import com.powerje.todo.R;
 import com.powerje.todo.models.Todo;
+import com.powerje.todo.receivers.TodoReceiver;
 import com.powerje.todo.reminders.TodoNotificationUtils;
 import com.powerje.todo.views.adapters.TodoAdapter;
 
@@ -41,13 +43,17 @@ public class MainActivity extends Activity {
             }
         });
 
-        todoAdapter.addTodo(new Todo("Eat pizza"));
-        todoAdapter.addTodo(new Todo("Acquire WiFi"));
-        todoAdapter.addTodo(new Todo("Make feature branch"));
+        todoAdapter.addTodo(new Todo(0, "Eat pizza"));
+        todoAdapter.addTodo(new Todo(1, "Acquire WiFi"));
+        todoAdapter.addTodo(new Todo(2, "Make feature branch"));
         list.setAdapter(todoAdapter);
 
         TodoNotificationUtils.setupNotifications(todoAdapter.getTodos(),
                 getApplicationContext());
+
+        Intent intent = new Intent(TodoReceiver.ACTION_TODO_TOGGLED);
+        intent.setClass(this, TodoReceiver.class);
+        sendBroadcast(intent, TodoReceiver.ACTION_TODO_TOGGLED);
     }
 
     @Override
