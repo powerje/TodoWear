@@ -27,6 +27,11 @@ public class TodoAdapter extends BaseAdapter {
         this.notifyDataSetChanged();
     }
 
+    public List<Todo> getTodos() {
+        // TODO: defensively copy this so as not to be a caveman
+        return todos;
+    }
+
     @Override
     public int getCount() { return todos.size(); }
 
