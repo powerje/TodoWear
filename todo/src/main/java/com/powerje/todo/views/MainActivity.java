@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
         list.setAdapter(todoAdapter);
 
         TodoNotificationUtils.setupNotifications(todoAdapter.getTodos(),
-                MainActivity.this);
+                getApplicationContext());
     }
 
     @Override
