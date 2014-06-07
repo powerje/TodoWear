@@ -1,9 +1,11 @@
-package com.example.todowear.todo;
+package com.powerje.todo.views;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.powerje.todo.R;
 
 
 public class MainActivity extends Activity {
@@ -13,7 +15,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
