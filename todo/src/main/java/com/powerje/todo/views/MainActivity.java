@@ -30,8 +30,10 @@ public class MainActivity extends Activity {
             @Override
             public void onChanged() {
                 // Fire off notification stuff
+
             }
         });
+
         todoAdapter.addTodo(new Todo("Eat pizza"));
         todoAdapter.addTodo(new Todo("Acquire WiFi"));
         todoAdapter.addTodo(new Todo("Make feature branch"));
