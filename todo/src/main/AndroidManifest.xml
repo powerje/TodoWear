@@ -12,10 +12,16 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".receivers.TodoReceiver">
+            <intent-filter>
+                <action android:name="com.powerje.todo.intent.action.TOGGLED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

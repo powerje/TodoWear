@@ -9,7 +9,7 @@ import android.preview.support.wearable.notifications.WearableNotifications;
 import android.support.v4.app.NotificationCompat;
 
 import com.powerje.todo.R;
-import com.powerje.todo.views.MainActivity;
+import com.powerje.todo.receivers.TodoReceiver;
 
 import java.util.List;
 
@@ -19,6 +19,7 @@ import java.util.List;
 public class TodoNotificationUtils {
 
     public interface TodoNotification {
+        public int getId();
         public String getText();
         public boolean isChecked();
     }
@@ -27,6 +28,11 @@ public class TodoNotificationUtils {
 
         // Nuke all previous notifications and generate unique ids
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancelAll();
+
+        // TODO: if this prevents notifications from canceling wrong great, but make all this async
+        try { Thread.sleep(200); } catch (Exception e) {}
+
         int notificationId = 0;
 
         // String to represent the group all the notifications will be a part of
@@ -52,18 +58,25 @@ public class TodoNotificationUtils {
 
         for (TodoNotification n : todos) {
             // Separate notifications that will be visible on the watch
-            Intent viewIntent1 = new Intent(context, MainActivity.class);
-            PendingIntent viewPendingIntent1 =
-                    PendingIntent.getActivity(context, notificationId + 1, viewIntent1, 0);
+            notificationId++;
+            PendingIntent viewPendingIntent = TodoNotificationUtils.toggleTodoIntent(n, context, notificationId);
             NotificationCompat.Builder builder1 = new NotificationCompat.Builder(context)
-                    .addAction(R.drawable.ic_launcher, "Done", viewPendingIntent1)
+                    .addAction(R.drawable.ic_launcher, "Done", viewPendingIntent)
                     .setContentTitle("Todo")
                     .setContentText(n.getText())
                     .setSmallIcon(R.drawable.ic_launcher);
             Notification notification1 = new WearableNotifications.Builder(builder1)
                     .setGroup(GROUP_KEY_TODO)
                     .build();
-            notificationManager.notify(notificationId++, notification1);
+            notificationManager.notify(notificationId, notification1);
         }
+    }
+
+    public static PendingIntent toggleTodoIntent(TodoNotification todo, Context context, int notificationId) {
+        Intent intent = new Intent(TodoReceiver.ACTION_TODO_TOGGLED);
+        intent.putExtra("todo_id", todo.getId());
+        PendingIntent viewPendingIntent1 = PendingIntent.getBroadcast(context, notificationId, intent, 0);
+
+        return viewPendingIntent1;
     }
 }
