@@ -1,0 +1,41 @@
+*.swp
+
+*.keystore
+
+*.DS_Store
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+*bin/
+*gen/
+
+
+
+# Local configuration file (sdk path, etc)
+local.properties
+project.properties
+
+# Eclipse project files
+*.classpath
+*.project
+*.settings
+bin
+/libraries/tree-view-list-android/.hg
+/libraries/tree-view-list-android/.checkstyle
+/libraries/tree-view-list-android/.fbprefs
+/libraries/tree-view-list-android/.hgignore
+/libraries/tree-view-list-android/.hgtags
+/libraries/tree-view-list-android/.pmd
+
+
+*.idea/
+*.iml
+.gradle
+tests
+out
+build/
