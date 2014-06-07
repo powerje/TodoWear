@@ -5,5 +5,5 @@
         android:title="@string/action_add"
         android:icon="@android:drawable/ic_input_add"
         android:orderInCategory="100"
-        android:showAsAction="never" />
+        android:showAsAction="always" />
 </menu>
