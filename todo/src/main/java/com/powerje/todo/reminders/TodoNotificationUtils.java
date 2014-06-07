@@ -21,15 +21,21 @@ public class TodoNotificationUtils {
 
     public interface TodoNotification {
         public String getText();
-
         public boolean isChecked();
     }
+
+    final static String GROUP_KEY_TODOS = "group_key_todos";
 
     public static void setupNotifications(List<TodoNotification> todos, Context context) {
 
         if (todos.size() == 0) { return; }
+        int id = 0;
 
-        // Open app intent
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+
+                 // Open app intent
+
         Intent resultIntent = new Intent(context, MainActivity.class);
         // Because clicking the notification opens a new ("special") activity, there's
         // no need to create an artificial back stack.
@@ -51,25 +57,40 @@ public class TodoNotificationUtils {
 
         List<Notification> notifications = new ArrayList<>();
         for (int i = 1; i < todos.size(); i++) {
+            TodoNotification n = todos.get(i);
 
-        }
+            // Create second page notification
+            NotificationCompat.Builder newTodoNotification =
+                    new NotificationCompat.Builder(context)
+                            .setSmallIcon(R.drawable.ic_launcher)
+                            .setContentTitle("Todo")
+                            .setContentText(n.getText());
 
-        // Create second page notification
-        Notification secondPageNotification =
-                new NotificationCompat.Builder(context)
-                        .setContentTitle("foo")
-                        .build();
+            Notification grouped = new WearableNotifications.Builder(newTodoNotification)
+                    .setGroup(GROUP_KEY_TODOS)
+                    .build();
+            notifications.add(grouped);
 
-        // Create main notification and add the second page
+
+            /*
         Notification twoPageNotification =
                 new WearableNotifications.Builder(notificationBuilder)
-                        .addPage(secondPageNotification)
+                        .setGroup(GROUP_KEY_TODOS)
                         .build();
+                        */
+            mNotifyMgr.notify(id++, grouped);
+        }
+
+        // Create main notification and add the second page
+        /*
+        Notification twoPageNotification =
+                new WearableNotifications.Builder(notificationBuilder)
+                        .setGroup(GROUP_KEY_TODOS)
+//                        .addPages(notifications)
+                        .build();
+                        */
 
 
-        NotificationManager mNotifyMgr =
-                (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-        // Builds the notification and issues it.
-        mNotifyMgr.notify(1, twoPageNotification);
+//        mNotifyMgr.notify(1, twoPageNotification);
     }
 }
