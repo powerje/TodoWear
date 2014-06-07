@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.powerje.todo.R;
 import com.powerje.todo.models.Todo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -19,12 +20,10 @@ import butterknife.InjectView;
  */
 public class TodoAdapter extends BaseAdapter {
 
-    private List<Todo> todos;
+    private List<Todo> todos = new ArrayList<>();
 
-    public TodoAdapter(List<Todo> todos) { this.todos = todos; }
-
-    public void setTodos(List<Todo> todos) {
-        this.todos = todos;
+    public void addTodo(Todo todo) {
+        todos.add(todo);
         this.notifyDataSetChanged();
     }
 
