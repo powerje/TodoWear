@@ -1,6 +1,7 @@
 package com.powerje.todo.views;
 
 import android.app.Activity;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,9 +11,6 @@ import com.powerje.todo.R;
 import com.powerje.todo.models.Todo;
 import com.powerje.todo.views.adapters.TodoAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -21,18 +19,23 @@ public class MainActivity extends Activity {
 
     @InjectView(R.id.list) ListView list;
 
-    List<Todo> todos = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
-        todos.add(new Todo("Eat pizza"));
-        todos.add(new Todo("Acquire WiFi"));
-        todos.add(new Todo("Make feature branch"));
-        list.setAdapter(new TodoAdapter(todos));
+        TodoAdapter todoAdapter = new TodoAdapter();
+        todoAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                // Fire off notification stuff
+            }
+        });
+        todoAdapter.addTodo(new Todo("Eat pizza"));
+        todoAdapter.addTodo(new Todo("Acquire WiFi"));
+        todoAdapter.addTodo(new Todo("Make feature branch"));
+        list.setAdapter(todoAdapter);
     }
 
     @Override
