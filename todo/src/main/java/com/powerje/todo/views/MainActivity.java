@@ -9,15 +9,19 @@ import android.widget.ListView;
 
 import com.powerje.todo.R;
 import com.powerje.todo.models.Todo;
+import com.powerje.todo.reminders.TodoNotificationUtils;
 import com.powerje.todo.views.adapters.TodoAdapter;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 
 public class MainActivity extends Activity {
 
     @InjectView(R.id.list) ListView list;
+
+    final TodoAdapter todoAdapter = new TodoAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +29,15 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
-        TodoAdapter todoAdapter = new TodoAdapter();
         todoAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 // Fire off notification stuff
-
+                Timber.d("Sending notifications!");
+                /*
+                TodoNotificationUtils.setupNotifications(todoAdapter.getTodos(),
+                        MainActivity.this);
+                        */
             }
         });
 
@@ -38,6 +45,9 @@ public class MainActivity extends Activity {
         todoAdapter.addTodo(new Todo("Acquire WiFi"));
         todoAdapter.addTodo(new Todo("Make feature branch"));
         list.setAdapter(todoAdapter);
+
+        TodoNotificationUtils.setupNotifications(todoAdapter.getTodos(),
+                MainActivity.this);
     }
 
     @Override
