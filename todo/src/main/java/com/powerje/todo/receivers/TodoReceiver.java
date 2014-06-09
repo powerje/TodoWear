@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import timber.log.Timber;
+import com.powerje.todo.models.Todo;
 
 /**
  * Created by jep on 6/7/14.
@@ -16,8 +16,7 @@ public class TodoReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "GOT AN INTENT", Toast.LENGTH_SHORT).show();
-
-        Timber.e("Received intent!");
+        Todo todo = intent.getExtras().getParcelable("todo");
+        Toast.makeText(context, "GOT AN INTENT, todo #" + todo.getId(), Toast.LENGTH_SHORT).show();
     }
 }
