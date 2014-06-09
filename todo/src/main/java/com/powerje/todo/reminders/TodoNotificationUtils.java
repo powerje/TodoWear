@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.preview.support.v4.app.NotificationManagerCompat;
 import android.preview.support.wearable.notifications.WearableNotifications;
 import android.support.v4.app.NotificationCompat;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class TodoNotificationUtils {
 
-    public interface TodoNotification {
+    public interface TodoNotification extends Parcelable {
         public int getId();
         public String getText();
         public boolean isChecked();
@@ -29,9 +30,6 @@ public class TodoNotificationUtils {
         // Nuke all previous notifications and generate unique ids
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancelAll();
-
-        // TODO: if this prevents notifications from canceling wrong great, but make all this async
-        try { Thread.sleep(200); } catch (Exception e) {}
 
         int notificationId = 0;
 
@@ -74,9 +72,9 @@ public class TodoNotificationUtils {
 
     public static PendingIntent toggleTodoIntent(TodoNotification todo, Context context, int notificationId) {
         Intent intent = new Intent(TodoReceiver.ACTION_TODO_TOGGLED);
-        intent.putExtra("todo_id", todo.getId());
-        PendingIntent viewPendingIntent1 = PendingIntent.getBroadcast(context, notificationId, intent, 0);
+        intent.putExtra("todo", todo);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        return viewPendingIntent1;
+        return pendingIntent;
     }
 }
