@@ -1,4 +1,4 @@
-package com.powerje.todo.models;
+package com.powerje.todo.data.models;
 
 import android.os.Parcel;
 
@@ -8,18 +8,17 @@ import com.powerje.todo.reminders.TodoNotificationUtils;
  * Created by jep on 6/7/14.
  */
 public class Todo implements TodoNotificationUtils.TodoNotification, android.os.Parcelable {
-    private int id;
+    private Long _id;
     private boolean checked;
     private String text;
 
-    public Todo(int id, String text) {
-        this.id = id;
+    public Todo(String text) {
         this.text = text;
     }
 
     public void toggleChecked() { checked = !checked; }
 
-    public int getId() { return id; }
+    public Long getId() { return _id; }
     public boolean isChecked() { return checked; }
     public String getText() { return text; }
 
@@ -30,13 +29,13 @@ public class Todo implements TodoNotificationUtils.TodoNotification, android.os.
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeLong(this._id);
         dest.writeByte(checked ? (byte) 1 : (byte) 0);
         dest.writeString(this.text);
     }
 
     private Todo(Parcel in) {
-        this.id = in.readInt();
+        this._id = in.readLong();
         this.checked = in.readByte() != 0;
         this.text = in.readString();
     }

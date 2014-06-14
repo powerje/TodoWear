@@ -7,7 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.powerje.todo.R;
-import com.powerje.todo.models.Todo;
+import com.powerje.todo.data.models.Todo;
 import com.powerje.todo.reminders.TodoNotificationUtils;
 
 import java.util.ArrayList;
