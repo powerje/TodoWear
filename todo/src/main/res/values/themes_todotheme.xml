@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="TodoTheme" parent="@style/_TodoTheme"/>
+
+  <style name="_TodoTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+
+    <item name="android:editTextBackground">@drawable/todotheme_edit_text_holo_light</item>
+
+    <item name="android:textColorHighlight">#997b8f96</item>
+    <item name="android:textSelectHandleLeft">@drawable/todotheme_text_select_handle_left</item>
+    <item name="android:textSelectHandleRight">@drawable/todotheme_text_select_handle_right</item>
+    <item name="android:textSelectHandle">@drawable/todotheme_text_select_handle_middle</item>
+
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewTodoTheme</item>
+
+    <item name="android:listChoiceIndicatorMultiple">@drawable/todotheme_btn_check_holo_light</item>
+
+    <item name="android:listChoiceIndicatorSingle">@drawable/todotheme_btn_radio_holo_light</item>
+
+    <item name="android:buttonStyle">@style/ButtonTodoTheme</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonTodoTheme</item>
+
+    <item name="android:dropDownSpinnerStyle">@style/SpinnerTodoTheme</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarTodoTheme</item>
+
+    <item name="android:buttonStyleToggle">@style/ToggleTodoTheme</item>
+
+    <item name="android:listChoiceBackgroundIndicator">@drawable/todotheme_list_selector_holo_light</item>
+
+    <item name="android:activatedBackgroundIndicator">@drawable/todotheme_activated_background_holo_light</item>
+
+    <item name="android:fastScrollThumbDrawable">@drawable/todotheme_fastscroll_thumb_holo</item>
+
+  </style>
+
+</resources>
