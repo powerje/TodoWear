@@ -21,7 +21,9 @@
                 <action android:name="com.powerje.todo.intent.action.TOGGLED" />
             </intent-filter>
         </receiver>
-
+        <provider
+            android:name=".data.TodoProvider"
+            android:authorities="com.powerje.todo.provider" />
     </application>
 
 </manifest>
