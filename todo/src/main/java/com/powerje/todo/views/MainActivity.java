@@ -1,59 +1,51 @@
 package com.powerje.todo.views;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.database.DataSetObserver;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.powerje.todo.R;
-import com.powerje.todo.data.models.Todo;
-import com.powerje.todo.receivers.TodoReceiver;
+import com.powerje.todo.data.Todo;
+import com.powerje.todo.data.TodoProvider;
+import com.powerje.todo.data.adapters.TodoCursorAdapter;
 import com.powerje.todo.reminders.TodoNotificationUtils;
-import com.powerje.todo.views.adapters.TodoAdapter;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import timber.log.Timber;
 
-
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @InjectView(R.id.list) ListView list;
 
-    final TodoAdapter todoAdapter = new TodoAdapter();
+    private TodoCursorAdapter todoCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
-
-        todoAdapter.registerDataSetObserver(new DataSetObserver() {
+        todoCursorAdapter = new TodoCursorAdapter(this);
+        list.setAdapter(todoCursorAdapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onChanged() {
-                // Fire off notification stuff
-                Timber.d("Sending notifications!");
-                /*
-                TodoNotificationUtils.setupNotifications(todoAdapter.getTodos(),
-                        MainActivity.this);
-                        */
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor c = (Cursor) todoCursorAdapter.getItem(position);
+                Todo todo = TodoProvider.getTodo(c);
+                todo.toggleChecked();
+                TodoProvider.updateTodo(todo, getApplicationContext());
             }
         });
+        getLoaderManager().initLoader(R.id.list, null, this);
 
-        todoAdapter.addTodo(new Todo("Eat pizza"));
-        todoAdapter.addTodo(new Todo("Acquire WiFi"));
-        todoAdapter.addTodo(new Todo("Make feature branch"));
-        list.setAdapter(todoAdapter);
-
-        TodoNotificationUtils.setupNotifications(todoAdapter.getTodos(),
-                getApplicationContext());
-
-        Intent intent = new Intent(TodoReceiver.ACTION_TODO_TOGGLED);
-        intent.setClass(this, TodoReceiver.class);
-        sendBroadcast(intent, TodoReceiver.ACTION_TODO_TOGGLED);
+        TodoNotificationUtils.setupNotifications(TodoProvider.getTodos(this), this);
     }
 
     @Override
@@ -65,13 +57,22 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_plus) {
+            TodoProvider.addTodo(new Todo("foo"), this);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader loader = new CursorLoader(this);
+        loader.setUri(TodoProvider.TODO_URI);
+        return loader;
+    }
+
+    @Override public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) { todoCursorAdapter.swapCursor(cursor); }
+
+    @Override public void onLoaderReset(Loader<Cursor> loader) { todoCursorAdapter.swapCursor(null); }
 }

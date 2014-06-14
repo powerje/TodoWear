@@ -4,12 +4,15 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.preview.support.v4.app.NotificationManagerCompat;
 import android.preview.support.wearable.notifications.WearableNotifications;
 import android.support.v4.app.NotificationCompat;
 
 import com.powerje.todo.R;
+import com.powerje.todo.data.Todo;
 import com.powerje.todo.receivers.TodoReceiver;
+import com.powerje.todo.views.MainActivity;
 
 import java.util.List;
 
@@ -18,66 +21,73 @@ import java.util.List;
  */
 public class TodoNotificationUtils {
 
-    public interface TodoNotification {
-        public Long getId();
-        public String getText();
-        public boolean isChecked();
+    public static void setupNotifications(final List<Todo> todos, final Context context) {
+        if (todos.size() == 0) { return; }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Nuke all previous notifications and generate unique ids
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+                notificationManager.cancelAll();
+                SystemClock.sleep(1000); // Sometimes the new notificartions would get canceled by the cancelAll, wut
+
+                int notificationId = 0;
+
+                // String to represent the group all the notifications will be a part of
+                final String GROUP_KEY_TODO = "group_key_todo";
+
+                // Group notification that will be visible on the phone
+                NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
+                        .setBigContentTitle(todos.size() + " todo items");
+                for (Todo n : todos) {
+                    style.addLine(n.getText());
+                }
+
+                NotificationCompat.Builder builderG = new NotificationCompat.Builder(context)
+                        .setStyle(style)
+                        .setContentTitle(todos.size() + " todos")
+                        .setContentIntent(TodoNotificationUtils.launchAppIntent(context))
+                        .setContentText(todos.get(0).getText())
+                        .setSmallIcon(R.drawable.ic_launcher);
+
+                Notification summaryNotification = new WearableNotifications.Builder(builderG)
+                        .setGroup(GROUP_KEY_TODO, WearableNotifications.GROUP_ORDER_SUMMARY)
+                        .build();
+                notificationManager.notify(notificationId, summaryNotification);
+
+
+                for (Todo n : todos) {
+                    if (n.isChecked()) { continue; }
+                    // Separate notifications that will be visible on the watch
+                    notificationId++;
+                    PendingIntent viewPendingIntent = TodoNotificationUtils.toggleTodoIntent(n, context, notificationId);
+                    NotificationCompat.Builder builder1 = new NotificationCompat.Builder(context)
+                            .addAction(R.drawable.ic_launcher, "Done", viewPendingIntent)
+                            .setContentTitle("Todo")
+                            .setContentText(n.getText())
+                            .setSmallIcon(R.drawable.ic_launcher);
+                    Notification notification1 = new WearableNotifications.Builder(builder1)
+                            .setGroup(GROUP_KEY_TODO)
+                            .build();
+                    notificationManager.notify(notificationId, notification1);
+                }
+            }
+        }).start();
     }
 
-    public static void setupNotifications(List<TodoNotification> todos, Context context) {
-
-        // Nuke all previous notifications and generate unique ids
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.cancelAll();
-
-        int notificationId = 0;
-
-        // String to represent the group all the notifications will be a part of
-        final String GROUP_KEY_TODO = "group_key_todo";
-
-        // Group notification that will be visible on the phone
-        NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
-                .setBigContentTitle(todos.size() + " todo items");
-        for (TodoNotification n : todos) {
-            style.addLine(n.getText());
-        }
-
-        NotificationCompat.Builder builderG = new NotificationCompat.Builder(context)
-                .setStyle(style)
-                .setContentTitle(todos.size() + " todos")
-                .setContentText(todos.get(0).getText())
-                .setSmallIcon(R.drawable.ic_launcher);
-
-        Notification summaryNotification = new WearableNotifications.Builder(builderG)
-                .setGroup(GROUP_KEY_TODO, WearableNotifications.GROUP_ORDER_SUMMARY)
-                .build();
-        notificationManager.notify(notificationId, summaryNotification);
-
-        for (TodoNotification n : todos) {
-            // Separate notifications that will be visible on the watch
-            notificationId++;
-            PendingIntent viewPendingIntent = TodoNotificationUtils.toggleTodoIntent(n, context, notificationId);
-            NotificationCompat.Builder builder1 = new NotificationCompat.Builder(context)
-                    .addAction(R.drawable.ic_launcher, "Done", viewPendingIntent)
-                    .setContentTitle("Todo")
-                    .setContentText(n.getText())
-                    .setSmallIcon(R.drawable.ic_launcher);
-            Notification notification1 = new WearableNotifications.Builder(builder1)
-                    .setGroup(GROUP_KEY_TODO)
-                    .build();
-            notificationManager.notify(notificationId, notification1);
-        }
-    }
-
-    public static PendingIntent toggleTodoIntent(TodoNotification todo, Context context, int notificationId) {
+    private static PendingIntent toggleTodoIntent(Todo todo, Context context, int notificationId) {
         Intent intent = new Intent(TodoReceiver.ACTION_TODO_TOGGLED);
         intent.putExtra("todoId", todo.getId());
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+        return PendingIntent.getBroadcast(context,
                 notificationId,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
+    }
 
-        return pendingIntent;
+    private static PendingIntent launchAppIntent(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 }

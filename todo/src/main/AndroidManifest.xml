@@ -6,11 +6,12 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/TodoTheme" >
         <activity
-            android:name=".views.MainActivity"
+            android:name="com.powerje.todo.views.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
+                <action android:name="com.powerje.todo.views.MainActivity" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -22,8 +23,9 @@
             </intent-filter>
         </receiver>
         <provider
-            android:name=".data.TodoProvider"
-            android:authorities="com.powerje.todo.provider" />
+            android:authorities="com.powerje.todo.provider"
+            android:exported="false"
+            android:name=".data.TodoProvider" />
     </application>
 
 </manifest>
