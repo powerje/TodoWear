@@ -130,7 +130,7 @@ public class TodoProvider extends ContentProvider {
     }
 
     public static void removeTodo(Todo todo, Context context)  {
-        cupboard().withContext(context).delete(TODO_URI, todo);
+        context.getContentResolver().delete(TODO_URI, "_id = ?", new String[]{"" + todo.getId()});
     }
 
     public static void updateTodo(Todo todo, Context context) {
