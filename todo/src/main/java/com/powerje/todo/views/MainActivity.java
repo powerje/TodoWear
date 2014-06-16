@@ -10,9 +10,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.powerje.todo.R;
@@ -26,6 +24,7 @@ import java.util.Set;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnItemClick;
 
 public class MainActivity extends Activity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -43,7 +42,6 @@ public class MainActivity extends Activity implements
         list.setAdapter(todoCursorAdapter);
         list.setMultiChoiceModeListener(multiChoiceModeListener);
 
-        list.setOnItemClickListener(itemClickListener);
         getLoaderManager().initLoader(R.id.list, null, this);
 
         TodoNotificationUtils.setupNotifications(TodoProvider.getTodos(this), this);
@@ -69,6 +67,17 @@ public class MainActivity extends Activity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    // UI callbacks
+
+    @OnItemClick(R.id.list)
+    void onItemClick(int position) {
+        Cursor c = (Cursor) todoCursorAdapter.getItem(position);
+        Todo todo = TodoProvider.getTodo(c);
+        todo.toggleChecked();
+        TodoProvider.updateTodo(todo, getApplicationContext());
     }
 
 
@@ -145,16 +154,6 @@ public class MainActivity extends Activity implements
             for (Todo todo : selected) {
                 TodoProvider.removeTodo(todo, MainActivity.this);
             }
-        }
-    };
-
-    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Cursor c = (Cursor) todoCursorAdapter.getItem(position);
-            Todo todo = TodoProvider.getTodo(c);
-            todo.toggleChecked();
-            TodoProvider.updateTodo(todo, getApplicationContext());
         }
     };
 }
