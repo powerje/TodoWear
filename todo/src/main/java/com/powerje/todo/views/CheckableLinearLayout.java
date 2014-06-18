@@ -9,18 +9,18 @@ import android.widget.LinearLayout;
 /**
  * Created by jep on 6/15/14.
  */
-public class CheckableView extends LinearLayout implements Checkable {
+public class CheckableLinearLayout extends LinearLayout implements Checkable {
     private boolean checked = false;
 
-    public CheckableView(Context context) {
+    public CheckableLinearLayout(Context context) {
         super(context);
     }
 
-    public CheckableView(Context context, AttributeSet attrs) {
+    public CheckableLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public CheckableView(Context context, AttributeSet attrs, int defStyle) {
+    public CheckableLinearLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
