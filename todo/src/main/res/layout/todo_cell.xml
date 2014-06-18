@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.powerje.todo.views.CheckableView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.powerje.todo.views.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,4 +12,4 @@
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:padding="8dp" />
 
-</com.powerje.todo.views.CheckableView>
+</com.powerje.todo.views.CheckableLinearLayout>
