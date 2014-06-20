@@ -9,7 +9,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.powerje.todo.data.events.EventTodoUpdated;
+import com.powerje.todo.reminders.TodoNotificationUtils;
+
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
@@ -36,6 +41,7 @@ public class TodoProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mDatabaseHelper = new TodoHelper(getContext());
+        EventBus.getDefault().register(this);
         return true;
     }
 
@@ -125,17 +131,22 @@ public class TodoProvider extends ContentProvider {
         }
     }
 
+    public void onEvent(EventTodoUpdated event) {
+        ContentValues values = cupboard().withEntity(Todo.class).toContentValues(event.todo);
+        if (getContext() != null) {
+            getContext().getContentResolver().update(TODO_URI, values, "_id = ?", new String[]{"" + event.todo.getId()});
+            TodoNotificationUtils.setupNotifications(TodoProvider.getTodos(getContext()), getContext());
+        }
+    }
+
     public static void addTodo(Todo todo, Context context) {
        cupboard().withContext(context).put(TODO_URI, todo);
+        TodoNotificationUtils.setupNotifications(TodoProvider.getTodos(context), context);
     }
 
     public static void removeTodo(Todo todo, Context context)  {
         context.getContentResolver().delete(TODO_URI, "_id = ?", new String[]{"" + todo.getId()});
-    }
-
-    public static void updateTodo(Todo todo, Context context) {
-        ContentValues values = cupboard().withEntity(Todo.class).toContentValues(todo);
-        context.getContentResolver().update(TODO_URI, values, "_id = ?", new String[]{"" + todo.getId()});
+        TodoNotificationUtils.setupNotifications(TodoProvider.getTodos(context), context);
     }
 
     public static Todo getTodo(Long id, Context context) {

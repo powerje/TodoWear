@@ -28,7 +28,6 @@ public class TodoReceiver extends BroadcastReceiver {
             Uri todoUri = ContentUris.withAppendedId(TODO_URI, todoId);
             Todo todo = cupboard().withContext(context).get(todoUri, Todo.class);
             todo.toggleChecked();
-            TodoProvider.updateTodo(todo, context);
 
             TodoNotificationUtils.setupNotifications(TodoProvider.getTodos(context), context);
             Toast.makeText(context, "Just toggled '" + todo.getText() + "' " + todo.getId(), Toast.LENGTH_SHORT).show();

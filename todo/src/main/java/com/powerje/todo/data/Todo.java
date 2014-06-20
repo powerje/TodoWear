@@ -1,5 +1,9 @@
 package com.powerje.todo.data;
 
+import com.powerje.todo.data.events.EventTodoUpdated;
+
+import de.greenrobot.event.EventBus;
+
 /**
  * Created by jep on 6/7/14.
  */
@@ -12,8 +16,10 @@ public class Todo {
     public Todo(String text) { this.text = text; }
 
 
-    public void toggleChecked() {  checked = !checked; }
-    public void setText(String text) { this.text = text; }
+    public void toggleChecked() {
+        checked = !checked;
+        EventBus.getDefault().post(new EventTodoUpdated(this));
+    }
 
     public Long getId() { return _id; }
     public boolean isChecked() { return checked; }

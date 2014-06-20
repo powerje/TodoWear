@@ -75,7 +75,6 @@ public class MainActivity extends Activity implements
         Cursor c = (Cursor) todoCursorAdapter.getItem(position);
         Todo todo = TodoProvider.getTodo(c);
         todo.toggleChecked();
-        TodoProvider.updateTodo(todo, getApplicationContext());
     }
 
     private void showAddTodoDialog() {
