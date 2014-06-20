@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AbsListView;
-import android.widget.ListView;
 
 import com.powerje.todo.R;
 import com.powerje.todo.data.Todo;
@@ -26,11 +25,12 @@ import java.util.Set;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
+import de.timroes.android.listview.EnhancedListView;
 
 public class MainActivity extends Activity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    @InjectView(R.id.list) ListView list;
+    @InjectView(R.id.list) EnhancedListView list;
 
     private TodoCursorAdapter todoCursorAdapter;
 
@@ -46,6 +46,32 @@ public class MainActivity extends Activity implements
         getLoaderManager().initLoader(R.id.list, null, this);
 
         TodoNotificationUtils.setupNotifications(TodoProvider.getTodos(this), this);
+        setupUndo();
+    }
+
+    private void setupUndo() {
+        list.setUndoStyle(EnhancedListView.UndoStyle.MULTILEVEL_POPUP);
+        list.setDismissCallback(new EnhancedListView.OnDismissCallback() {
+
+            @Override
+            public EnhancedListView.Undoable onDismiss(EnhancedListView listView, final int position) {
+
+                Cursor c = (Cursor) todoCursorAdapter.getItem(position);
+                final Todo todo = TodoProvider.getTodo(c);
+
+                todoCursorAdapter.putPendingDismiss(todo.getId());
+                todoCursorAdapter.notifyDataSetChanged();
+
+                TodoProvider.removeTodo(todo, getApplicationContext());
+
+                return new EnhancedListView.Undoable() {
+                    @Override public void undo() { TodoProvider.addTodo(todo, getApplicationContext()); }
+                    @Override public String getTitle() { return "Deleted '" + todo.getText() + "'"; }
+                    @Override public void discard() { }
+                };
+            }
+        });
+        list.enableSwipeToDismiss();
     }
 
     @Override
@@ -121,10 +147,7 @@ public class MainActivity extends Activity implements
             return true;
         }
 
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
+        @Override public boolean onPrepareActionMode(ActionMode mode, Menu menu) { return false; }
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
@@ -138,10 +161,7 @@ public class MainActivity extends Activity implements
             }
         }
 
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            selected = null;
-        }
+        @Override public void onDestroyActionMode(ActionMode mode) { selected = null; }
 
         private void deleteSelectedItems() {
             for (Todo todo : selected) {

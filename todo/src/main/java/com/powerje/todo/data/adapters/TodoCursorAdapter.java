@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckedTextView;
-import android.widget.CursorAdapter;
 
 import com.powerje.todo.R;
 import com.powerje.todo.data.Todo;
@@ -19,7 +18,7 @@ import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 /**
  * Created by jep on 6/14/14.
  */
-public class TodoCursorAdapter extends CursorAdapter {
+public class TodoCursorAdapter extends BaseSwipableCursorAdapter {
 
     static class ViewHolder {
         @InjectView(R.id.text) CheckedTextView name;
