@@ -1,6 +1,7 @@
 package com.powerje.todo.views;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -59,10 +60,7 @@ public class MainActivity extends Activity implements
         int id = item.getItemId();
         switch (id) {
             case R.id.action_plus:
-                TodoProvider.addTodo(new Todo("foo"), this);
-                return true;
-            case R.id.action_edit:
-                startActionMode(multiChoiceModeListener);
+                showAddTodoDialog();
                 return true;
         }
 
@@ -80,6 +78,11 @@ public class MainActivity extends Activity implements
         TodoProvider.updateTodo(todo, getApplicationContext());
     }
 
+    private void showAddTodoDialog() {
+        FragmentManager fm = getFragmentManager();
+        NewTodoDialogFragment dialog = NewTodoDialogFragment.newInstance();
+        dialog.show(fm, "fragment_edit_name");
+    }
 
     // LoaderCallbacks
 
@@ -112,9 +115,7 @@ public class MainActivity extends Activity implements
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Called both when startActionMode is called on Activity and when user long presses listview
             selected = new HashSet<>();
-            //list.setOnItemClickListener(null);
 
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context, menu);
@@ -123,19 +124,15 @@ public class MainActivity extends Activity implements
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            // Here you can perform updates to the CAB due to
-            // an invalidate() request
             return false;
         }
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // This does get called whether startActionMode is called on Activity
-            // or via user long press
             switch (item.getItemId()) {
                 case R.id.menu_delete:
                     deleteSelectedItems();
-                    mode.finish(); // Action picked, so close the CAB
+                    mode.finish();
                     return true;
                 default:
                     return false;
@@ -144,10 +141,7 @@ public class MainActivity extends Activity implements
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            // Here you can make any necessary updates to the activity when
-            // the CAB is removed. By default, selected items are deselected/unchecked.
             selected = null;
-            //list.setOnItemClickListener(itemClickListener);
         }
 
         private void deleteSelectedItems() {
