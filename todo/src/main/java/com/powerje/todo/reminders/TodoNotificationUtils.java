@@ -40,13 +40,19 @@ public class TodoNotificationUtils {
                 // Group notification that will be visible on the phone
                 NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
                         .setBigContentTitle(todos.size() + " todo items");
+
+                int toBeDone = 0;
+
                 for (Todo n : todos) {
                     style.addLine(n.getText());
+                    if(!n.isChecked()){
+                        toBeDone++;
+                    }
                 }
 
                 NotificationCompat.Builder builderG = new NotificationCompat.Builder(context)
                         .setStyle(style)
-                        .setContentTitle(todos.size() + " todos")
+                        .setContentTitle(toBeDone + " of "+todos.size()+" todos to complete.")
                         .setContentIntent(TodoNotificationUtils.launchAppIntent(context))
                         .setContentText(todos.get(0).getText())
                         .setSmallIcon(R.drawable.ic_launcher);
